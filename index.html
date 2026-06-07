@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pakistan At A Glance</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="economy.html">Economy</a></li>
+      <li><a href="population.html">Population</a></li>
+      <li><a href="education.html">Education</a></li>
+      <li><a href="health.html">Health</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <h1>Pakistan At A Glance</h1>
+    <p>An interactive exploration of Pakistan's socioeconomic indicators</p>
+  </section>
+
+  <!-- KPI CARDS -->
+  <section class="kpi-section">
+    <div class="kpi-card">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-value" id="kpi-population">231M</div>
+      <div class="kpi-label">Population</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-value" id="kpi-gdp">$341B</div>
+      <div class="kpi-label">GDP (2023)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📚</div>
+      <div class="kpi-value" id="kpi-literacy">58%</div>
+      <div class="kpi-label">Literacy Rate</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">❤️</div>
+      <div class="kpi-value" id="kpi-life">67</div>
+      <div class="kpi-label">Life Expectancy</div>
+    </div>
+  </section>
+
+  <!-- MAP SECTION -->
+  <section class="map-section">
+    <h2>Provinces Overview</h2>
+    <p class="section-sub">Click a province to explore its indicators</p>
+    <div id="pakistan-map"></div>
+  </section>
+
+  <script src="js/shared.js"></script>
+  <script src="js/home.js"></script>
+
+</body>
+</html>
