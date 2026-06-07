@@ -1,3 +1,151 @@
+/* ── Reset & Base ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+/* ── Navbar ── */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1e293b;
+  border-bottom: 2px solid #22c55e;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: #22c55e;
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  padding: 3rem 1rem 1.5rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  color: #f1f5f9;
+}
+
+.hero p {
+  color: #94a3b8;
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* ── KPI Cards ── */
+.kpi-section {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 2rem;
+}
+
+.kpi-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  min-width: 160px;
+  transition: transform 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px);
+  border-color: #22c55e;
+}
+
+.kpi-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.kpi-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 0.3rem;
+}
+
+/* ── Map Section ── */
+.map-section {
+  text-align: center;
+  padding: 2rem;
+}
+
+.map-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.section-sub {
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+}
+
+#pakistan-map {
+  display: flex;
+  justify-content: center;
+}
+
+#pakistan-map svg {
+  background: #1e293b;
+  border-radius: 12px;
+  border: 1px solid #334155;
+}
+
+/* ── Tooltip ── */
+.tooltip {
+  position: absolute;
+  background: #1e293b;
+  border: 1px solid #22c55e;
+  color: #f1f5f9;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
 /* ── Charts Grid ── */
 .charts-grid {
   display: grid;
@@ -31,4 +179,23 @@
 /* ── Axes ── */
 .domain, .tick line {
   stroke: #334155;
+}
+
+/* ── Slider ── */
+.year-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+#year-slider {
+  flex: 1;
+  accent-color: #22c55e;
+}
+
+#slider-year-label {
+  color: #22c55e;
+  font-weight: 600;
+  min-width: 40px;
 }

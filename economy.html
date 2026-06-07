@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Economy — Pakistan At A Glance</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="economy.html" class="active">Economy</a></li>
+      <li><a href="population.html">Population</a></li>
+      <li><a href="education.html">Education</a></li>
+      <li><a href="health.html">Health</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <h1>Economy</h1>
+    <p>GDP, Inflation, Exports & Imports over time</p>
+  </section>
+
+  <section class="charts-grid">
+
+    <div class="chart-card">
+      <h2>GDP Over Time (USD Billions)</h2>
+      <div class="chart-controls">
+        <span class="chart-sub">2001 – 2023</span>
+      </div>
+      <div id="gdp-chart"></div>
+    </div>
+
+    <div class="chart-card">
+      <h2>Inflation Rate (%)</h2>
+      <div id="inflation-chart"></div>
+    </div>
+
+    <div class="chart-card full-width">
+      <h2>Exports vs Imports (% of GDP)</h2>
+      <div id="trade-chart"></div>
+    </div>
+
+  </section>
+
+  <div class="tooltip"></div>
+  <script src="js/shared.js"></script>
+  <script src="js/economy.js"></script>
+</body>
+</html>
