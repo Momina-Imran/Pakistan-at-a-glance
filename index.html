@@ -10,7 +10,6 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
     <ul class="nav-links">
@@ -22,45 +21,43 @@
     </ul>
   </nav>
 
-  <!-- HERO SECTION -->
   <section class="hero">
     <h1>Pakistan At A Glance</h1>
     <p>An interactive exploration of Pakistan's socioeconomic indicators</p>
   </section>
 
-  <!-- KPI CARDS -->
   <section class="kpi-section">
     <div class="kpi-card">
       <div class="kpi-icon">👥</div>
-      <div class="kpi-value" id="kpi-population">231M</div>
-      <div class="kpi-label">Population</div>
+      <div class="kpi-value" id="kpi-population">--</div>
+      <div class="kpi-label">Population (2023)</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon">💰</div>
-      <div class="kpi-value" id="kpi-gdp">$341B</div>
+      <div class="kpi-value" id="kpi-gdp">--</div>
       <div class="kpi-label">GDP (2023)</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon">📚</div>
-      <div class="kpi-value" id="kpi-literacy">58%</div>
+      <div class="kpi-value" id="kpi-literacy">--</div>
       <div class="kpi-label">Literacy Rate</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon">❤️</div>
-      <div class="kpi-value" id="kpi-life">67</div>
+      <div class="kpi-value" id="kpi-life">--</div>
       <div class="kpi-label">Life Expectancy</div>
     </div>
   </section>
 
-  <!-- MAP SECTION -->
   <section class="map-section">
-    <h2>Provinces Overview</h2>
-    <p class="section-sub">Click a province to explore its indicators</p>
+    <h2>Provinces — HDI Overview</h2>
+    <p class="section-sub">Hover over a province to see its HDI value</p>
     <div id="pakistan-map"></div>
   </section>
 
+  <div class="tooltip"></div>
+
   <script src="js/shared.js"></script>
   <script src="js/home.js"></script>
-
 </body>
 </html>
