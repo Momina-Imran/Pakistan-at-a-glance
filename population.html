@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Population — Pakistan At A Glance</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="economy.html">Economy</a></li>
+      <li><a href="population.html" class="active">Population</a></li>
+      <li><a href="education.html">Education</a></li>
+      <li><a href="health.html">Health</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <h1>Population</h1>
+    <p>Growth trends, urban vs rural split, and province-wise HDI</p>
+  </section>
+
+  <section class="charts-grid">
+
+    <div class="chart-card full-width">
+      <h2>Total Population Growth (2001 – 2023)</h2>
+      <div id="pop-growth-chart"></div>
+    </div>
+
+    <div class="chart-card">
+      <h2>Urban vs Rural Split</h2>
+      <p class="chart-sub">Select year to update</p>
+      <div class="year-slider-wrap">
+        <input type="range" id="year-slider" min="2001" max="2023" value="2023" step="1"/>
+        <span id="slider-year-label">2023</span>
+      </div>
+      <div id="donut-chart"></div>
+    </div>
+
+    <div class="chart-card">
+      <h2>Province-wise HDI (2023)</h2>
+      <div id="hdi-bar-chart"></div>
+    </div>
+
+  </section>
+
+  <div class="tooltip"></div>
+  <script src="js/shared.js"></script>
+  <script src="js/population.js"></script>
+</body>
+</html>

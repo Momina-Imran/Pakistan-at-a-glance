@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Education — Pakistan At A Glance</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="economy.html">Economy</a></li>
+      <li><a href="population.html">Population</a></li>
+      <li><a href="education.html" class="active">Education</a></li>
+      <li><a href="health.html">Health</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <h1>Education</h1>
+    <p>Literacy rates, gender gap, and school enrollment trends</p>
+  </section>
+
+  <section class="charts-grid">
+
+    <div class="chart-card full-width">
+      <h2>Literacy Rate — Male vs Female (%)</h2>
+      <div id="literacy-chart"></div>
+    </div>
+
+    <div class="chart-card">
+      <h2>Gender Literacy Gap Over Years</h2>
+      <p class="chart-sub">Difference between male and female literacy</p>
+      <div id="gap-chart"></div>
+    </div>
+
+    <div class="chart-card">
+      <h2>School Enrollment Rate (%)</h2>
+      <p class="chart-sub">Primary vs Secondary</p>
+      <div id="enrollment-chart"></div>
+    </div>
+
+    <div class="chart-card full-width">
+      <h2>Literacy Rate Heatmap — Male vs Female by Year</h2>
+      <div id="heatmap-chart"></div>
+    </div>
+
+  </section>
+
+  <div class="tooltip"></div>
+  <script src="js/shared.js"></script>
+  <script src="js/education.js"></script>
+</body>
+</html>
