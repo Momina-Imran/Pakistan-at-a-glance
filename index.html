@@ -1,166 +1,63 @@
-const tooltip = d3.select('.tooltip');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pakistan At A Glance</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
+</head>
+<body>
 
-function animateCounter(id, target, prefix = '', suffix = '') {
-  const el = document.getElementById(id);
-  if (!el) return;
-  let start = 0;
-  const duration = 1500;
-  const step = target / (duration / 16);
-  const timer = setInterval(() => {
-    start += step;
-    if (start >= target) {
-      el.textContent = prefix + target + suffix;
-      clearInterval(timer);
-    } else {
-      el.textContent = prefix + Math.floor(start) + suffix;
-    }
-  }, 16);
-}
+  <nav class="navbar">
+    <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="economy.html">Economy</a></li>
+      <li><a href="population.html">Population</a></li>
+      <li><a href="education.html">Education</a></li>
+      <li><a href="health.html">Health</a></li>
+    </ul>
+  </nav>
 
-Promise.all([
-  d3.csv('data/population.csv'),
-  d3.csv('data/economy.csv'),
-  d3.csv('data/education.csv'),
-  d3.csv('data/health.csv'),
-  d3.csv('data/hdi_clean.csv'),
-  d3.json('data/pakistan.geojson')
-]).then(function([popData, econData, eduData, healthData, hdiData, geoData]) {
+  <section class="hero">
+    <h1>Pakistan At A Glance</h1>
+    <p>An interactive exploration of Pakistan's socioeconomic indicators</p>
+  </section>
 
-  // ── KPI: Population ──
-  const popRows = popData
-    .filter(d => d.indicator_code === 'SP.POP.TOTL' && !isNaN(+d.value))
-    .sort((a, b) => +b.year - +a.year);
-  if (popRows.length)
-    animateCounter('kpi-population', Math.round(+popRows[0].value / 1e6), '', 'M');
+  <section class="kpi-section">
+    <div class="kpi-card">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-value" id="kpi-population">--</div>
+      <div class="kpi-label">Population (2023)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-value" id="kpi-gdp">--</div>
+      <div class="kpi-label">GDP (2023)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📚</div>
+      <div class="kpi-value" id="kpi-literacy">--</div>
+      <div class="kpi-label">Literacy Rate</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">❤️</div>
+      <div class="kpi-value" id="kpi-life">--</div>
+      <div class="kpi-label">Life Expectancy</div>
+    </div>
+  </section>
 
-  // ── KPI: GDP ──
-  const gdpRows = econData
-    .filter(d => d.indicator_code === 'NY.GDP.MKTP.CD' && !isNaN(+d.value))
-    .sort((a, b) => +b.year - +a.year);
-  if (gdpRows.length)
-    animateCounter('kpi-gdp', Math.round(+gdpRows[0].value / 1e9), '$', 'B');
+  <section class="map-section">
+    <h2>Provinces — HDI Overview</h2>
+    <p class="section-sub">Hover over a province to see its HDI value</p>
+    <div id="pakistan-map"></div>
+  </section>
 
-  // ── KPI: Literacy ──
-  const litF = eduData
-    .filter(d => d.indicator_code === 'SE.ADT.LITR.FE.ZS' && !isNaN(+d.value))
-    .sort((a, b) => +b.year - +a.year);
-  const litM = eduData
-    .filter(d => d.indicator_code === 'SE.ADT.LITR.MA.ZS' && !isNaN(+d.value))
-    .sort((a, b) => +b.year - +a.year);
-  if (litF.length && litM.length)
-    animateCounter('kpi-literacy', Math.round((+litF[0].value + +litM[0].value) / 2), '', '%');
+  <div class="tooltip"></div>
 
-  // ── KPI: Life Expectancy ──
-  const lifeRows = healthData
-    .filter(d => d.indicator_code === 'SP.DYN.LE00.IN' && !isNaN(+d.value))
-    .sort((a, b) => +b.year - +a.year);
-  if (lifeRows.length)
-    animateCounter('kpi-life', Math.round(+lifeRows[0].value), '', ' yrs');
-
-  // ── HDI Map ──
-  const mapContainer = document.getElementById('pakistan-map');
-  const width = mapContainer.offsetWidth || 600;
-  const height = 500;
-
-  const svg = d3.select('#pakistan-map')
-    .append('svg')
-    .attr('width', width)
-    .attr('height', height);
-
-  const colorScale = d3.scaleSequential()
-    .domain([0.38, 0.70])
-    .interpolator(d3.interpolateGreens);
-
-  // HDI latest year
-  const latestYear = d3.max(hdiData, d => +d.year);
-  const hdiMap = {};
-  hdiData
-    .filter(d => +d.year === latestYear)
-    .forEach(d => { hdiMap[d.Region.trim()] = +d.hdi; });
-
-  // HDI CSV names → GeoJSON shapeName mapping
-  const nameMap = {
-    'AJK':                            'Azad Kashmir',
-    'Balochistan':                    'Balochistan',
-    'KPK':                            'Khyber Pakhtunkhwa',
-    'Punjab':                         'Punjab',
-    'Sindh':                          'Sindh',
-    'Islamabad (ICT)':                'Islamabad',
-    'Gilgit Baltistan':               'Gilgit-Baltistan',
-    'FATA':                           'FATA'
-  };
-
-  // Reverse map: shapeName → hdi value
-  const shapeHDI = {};
-  Object.entries(nameMap).forEach(([csvName, shapeName]) => {
-    if (hdiMap[csvName] !== undefined) {
-      shapeHDI[shapeName] = hdiMap[csvName];
-    }
-  });
-
-  // Projection — fitExtent automatically sizes map
-  const projection = d3.geoMercator()
-    .fitExtent([[10, 10], [width - 10, height - 10]], geoData);
-
-  const path = d3.geoPath().projection(projection);
-
-  svg.selectAll('path')
-    .data(geoData.features)
-    .enter()
-    .append('path')
-    .attr('d', path)
-    .attr('fill', d => {
-      const name = d.properties.shapeName;
-      return shapeHDI[name] ? colorScale(shapeHDI[name]) : '#334155';
-    })
-    .attr('stroke', '#0f172a')
-    .attr('stroke-width', 1.5)
-    .on('mouseover', function(event, d) {
-      const name = d.properties.shapeName;
-      const hdi = shapeHDI[name];
-      d3.select(this).attr('stroke', '#22c55e').attr('stroke-width', 2.5);
-      tooltip.style('opacity', 1)
-        .html(`<strong>${name}</strong><br/>HDI (${latestYear}): ${hdi ? hdi.toFixed(3) : 'N/A'}`);
-    })
-    .on('mousemove', function(event) {
-      tooltip
-        .style('left', (event.pageX + 12) + 'px')
-        .style('top', (event.pageY - 28) + 'px');
-    })
-    .on('mouseout', function() {
-      d3.select(this).attr('stroke', '#0f172a').attr('stroke-width', 1.5);
-      tooltip.style('opacity', 0);
-    });
-
-  // ── Legend ──
-  const legendWidth = 200;
-  const legendSvg = d3.select('#pakistan-map')
-    .append('svg')
-    .attr('width', legendWidth + 40)
-    .attr('height', 50)
-    .style('display', 'block')
-    .style('margin', '10px auto');
-
-  const defs = legendSvg.append('defs');
-  const grad = defs.append('linearGradient').attr('id', 'legend-gradient');
-  grad.selectAll('stop')
-    .data([
-      { offset: '0%',   color: colorScale(0.38) },
-      { offset: '100%', color: colorScale(0.70) }
-    ])
-    .enter().append('stop')
-    .attr('offset', d => d.offset)
-    .attr('stop-color', d => d.color);
-
-  legendSvg.append('rect')
-    .attr('x', 20).attr('y', 10)
-    .attr('width', legendWidth).attr('height', 12)
-    .style('fill', 'url(#legend-gradient)').attr('rx', 4);
-
-  legendSvg.append('text').attr('x', 20).attr('y', 35)
-    .attr('fill', '#94a3b8').style('font-size', '11px').text('Low HDI');
-  legendSvg.append('text').attr('x', legendWidth + 20).attr('y', 35)
-    .attr('fill', '#94a3b8').attr('text-anchor', 'end')
-    .style('font-size', '11px').text('High HDI');
-
-}).catch(err => console.error('Error:', err));
+  <script src="js/shared.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

@@ -199,3 +199,18 @@ body {
   font-weight: 600;
   min-width: 40px;
 }
+
+#pakistan-map svg {
+  display: block;
+  margin: 0 auto;
+}
+/* ── Home Charts ── */
+.home-charts-section {
+  padding: 2rem;
+}
+
+.home-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}

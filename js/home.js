@@ -1,4 +1,5 @@
 const tooltip = d3.select('.tooltip');
+const margin = { top: 20, right: 30, bottom: 40, left: 140 };
 
 function animateCounter(id, target, prefix = '', suffix = '') {
   const el = document.getElementById(id);
@@ -22,9 +23,8 @@ Promise.all([
   d3.csv('data/economy.csv'),
   d3.csv('data/education.csv'),
   d3.csv('data/health.csv'),
-  d3.csv('data/hdi_clean.csv'),
-  d3.json('data/pakistan.geojson')
-]).then(function([popData, econData, eduData, healthData, hdiData, geoData]) {
+  d3.csv('data/hdi_clean.csv')
+]).then(function([popData, econData, eduData, healthData, hdiData]) {
 
   // ── KPI: Population ──
   const popRows = popData
@@ -57,110 +57,154 @@ Promise.all([
   if (lifeRows.length)
     animateCounter('kpi-life', Math.round(+lifeRows[0].value), '', ' yrs');
 
-  // ── HDI Map ──
-  const mapContainer = document.getElementById('pakistan-map');
-  const width = mapContainer.offsetWidth || 600;
-  const height = 500;
+  // ── Chart 1: Province HDI Bar Chart ──
+  const latestYear = d3.max(hdiData, d => +d.year);
+  const provinceData = hdiData
+    .filter(d => +d.year === latestYear && d.Region !== 'Total')
+    .sort((a, b) => +b.hdi - +a.hdi);
 
-  const svg = d3.select('#pakistan-map')
-    .append('svg')
-    .attr('width', width)
-    .attr('height', height);
+  drawHDIBar(provinceData, latestYear);
+
+  // ── Chart 2: National HDI Trend ──
+  const nationalData = hdiData
+    .filter(d => d.Region === 'Total' || d.Region === 'PAKt')
+    .map(d => ({ year: +d.year, hdi: +d.hdi }))
+    .sort((a, b) => a.year - b.year);
+
+  drawHDITrend(nationalData);
+
+}).catch(err => console.error('Error:', err));
+
+
+// ── Province HDI Horizontal Bar ──
+function drawHDIBar(data, year) {
+  const container = document.getElementById('hdi-province-bar');
+  const width  = container.offsetWidth - margin.left - margin.right;
+  const height = data.length * 40;
 
   const colorScale = d3.scaleSequential()
     .domain([0.38, 0.70])
     .interpolator(d3.interpolateGreens);
 
-  // HDI latest year
-  const latestYear = d3.max(hdiData, d => +d.year);
-  const hdiMap = {};
-  hdiData
-    .filter(d => +d.year === latestYear)
-    .forEach(d => { hdiMap[d.Region.trim()] = +d.hdi; });
+  const svg = d3.select('#hdi-province-bar')
+    .append('svg')
+    .attr('width',  width  + margin.left + margin.right)
+    .attr('height', height + margin.top  + 20)
+    .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  // HDI CSV names → GeoJSON shapeName mapping
-  const nameMap = {
-    'AJK':                            'Azad Kashmir',
-    'Balochistan':                    'Balochistan',
-    'KPK':                            'Khyber Pakhtunkhwa',
-    'Punjab':                         'Punjab',
-    'Sindh':                          'Sindh',
-    'Islamabad (ICT)':                'Islamabad',
-    'Gilgit Baltistan':               'Gilgit-Baltistan',
-    'FATA':                           'FATA'
-  };
+  const x = d3.scaleLinear().domain([0, 0.75]).range([0, width]);
+  const y = d3.scaleBand()
+    .domain(data.map(d => d.Region))
+    .range([0, height])
+    .padding(0.3);
 
-  // Reverse map: shapeName → hdi value
-  const shapeHDI = {};
-  Object.entries(nameMap).forEach(([csvName, shapeName]) => {
-    if (hdiMap[csvName] !== undefined) {
-      shapeHDI[shapeName] = hdiMap[csvName];
-    }
-  });
+  // Bars
+  svg.selectAll('rect')
+    .data(data).enter().append('rect')
+    .attr('x', 0)
+    .attr('y', d => y(d.Region))
+    .attr('width', 0)
+    .attr('height', y.bandwidth())
+    .attr('fill', d => colorScale(+d.hdi))
+    .attr('rx', 4)
+    .transition().duration(800)
+    .attr('width', d => x(+d.hdi));
 
-  // Projection — fitExtent automatically sizes map
-  const projection = d3.geoMercator()
-    .fitExtent([[10, 10], [width - 10, height - 10]], geoData);
+  // Value labels
+  svg.selectAll('.val-label')
+    .data(data).enter().append('text')
+    .attr('x', d => x(+d.hdi) + 6)
+    .attr('y', d => y(d.Region) + y.bandwidth() / 2 + 4)
+    .attr('fill', '#94a3b8')
+    .style('font-size', '12px')
+    .text(d => (+d.hdi).toFixed(3));
 
-  const path = d3.geoPath().projection(projection);
-
-  svg.selectAll('path')
-    .data(geoData.features)
-    .enter()
-    .append('path')
-    .attr('d', path)
-    .attr('fill', d => {
-      const name = d.properties.shapeName;
-      return shapeHDI[name] ? colorScale(shapeHDI[name]) : '#334155';
-    })
-    .attr('stroke', '#0f172a')
-    .attr('stroke-width', 1.5)
+  // Mouseover on bars
+  svg.selectAll('rect')
     .on('mouseover', function(event, d) {
-      const name = d.properties.shapeName;
-      const hdi = shapeHDI[name];
-      d3.select(this).attr('stroke', '#22c55e').attr('stroke-width', 2.5);
       tooltip.style('opacity', 1)
-        .html(`<strong>${name}</strong><br/>HDI (${latestYear}): ${hdi ? hdi.toFixed(3) : 'N/A'}`);
+        .html(`<strong>${d.Region}</strong><br/>HDI (${year}): ${(+d.hdi).toFixed(3)}`);
     })
     .on('mousemove', function(event) {
-      tooltip
-        .style('left', (event.pageX + 12) + 'px')
+      tooltip.style('left', (event.pageX + 12) + 'px')
         .style('top', (event.pageY - 28) + 'px');
     })
-    .on('mouseout', function() {
-      d3.select(this).attr('stroke', '#0f172a').attr('stroke-width', 1.5);
-      tooltip.style('opacity', 0);
-    });
+    .on('mouseout', () => tooltip.style('opacity', 0));
 
-  // ── Legend ──
-  const legendWidth = 200;
-  const legendSvg = d3.select('#pakistan-map')
+  // Y Axis
+  svg.append('g').call(d3.axisLeft(y))
+    .selectAll('text')
+    .attr('fill', '#94a3b8')
+    .style('font-size', '12px');
+
+  // X Axis
+  svg.append('g')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(x).ticks(5))
+    .selectAll('text').attr('fill', '#94a3b8');
+}
+
+
+// ── National HDI Trend Line ──
+function drawHDITrend(data) {
+  const m = { top: 20, right: 30, bottom: 40, left: 60 };
+  const container = document.getElementById('hdi-trend-line');
+  const width  = container.offsetWidth - m.left - m.right;
+  const height = 300 - m.top - m.bottom;
+
+  const svg = d3.select('#hdi-trend-line')
     .append('svg')
-    .attr('width', legendWidth + 40)
-    .attr('height', 50)
-    .style('display', 'block')
-    .style('margin', '10px auto');
+    .attr('width',  width  + m.left + m.right)
+    .attr('height', height + m.top  + m.bottom)
+    .append('g')
+    .attr('transform', `translate(${m.left},${m.top})`);
 
-  const defs = legendSvg.append('defs');
-  const grad = defs.append('linearGradient').attr('id', 'legend-gradient');
-  grad.selectAll('stop')
-    .data([
-      { offset: '0%',   color: colorScale(0.38) },
-      { offset: '100%', color: colorScale(0.70) }
-    ])
-    .enter().append('stop')
-    .attr('offset', d => d.offset)
-    .attr('stop-color', d => d.color);
+  const x = d3.scaleLinear()
+    .domain(d3.extent(data, d => d.year)).range([0, width]);
+  const y = d3.scaleLinear()
+    .domain([0.35, d3.max(data, d => d.hdi) * 1.05]).range([height, 0]);
 
-  legendSvg.append('rect')
-    .attr('x', 20).attr('y', 10)
-    .attr('width', legendWidth).attr('height', 12)
-    .style('fill', 'url(#legend-gradient)').attr('rx', 4);
+  // Grid
+  svg.append('g').attr('class', 'grid')
+    .call(d3.axisLeft(y).tickSize(-width).tickFormat(''))
+    .selectAll('line').attr('stroke', '#1e293b');
+  svg.select('.grid .domain').remove();
 
-  legendSvg.append('text').attr('x', 20).attr('y', 35)
-    .attr('fill', '#94a3b8').style('font-size', '11px').text('Low HDI');
-  legendSvg.append('text').attr('x', legendWidth + 20).attr('y', 35)
-    .attr('fill', '#94a3b8').attr('text-anchor', 'end')
-    .style('font-size', '11px').text('High HDI');
+  // Area
+  svg.append('path').datum(data)
+    .attr('fill', '#22c55e').attr('opacity', 0.12)
+    .attr('d', d3.area()
+      .x(d => x(d.year)).y0(height).y1(d => y(d.hdi))
+      .curve(d3.curveMonotoneX));
 
-}).catch(err => console.error('Error:', err));
+  // Line
+  svg.append('path').datum(data)
+    .attr('fill', 'none').attr('stroke', '#22c55e')
+    .attr('stroke-width', 2.5)
+    .attr('d', d3.line()
+      .x(d => x(d.year)).y(d => y(d.hdi))
+      .curve(d3.curveMonotoneX));
+
+  // Dots
+  svg.selectAll('circle').data(data).enter().append('circle')
+    .attr('cx', d => x(d.year)).attr('cy', d => y(d.hdi))
+    .attr('r', 3).attr('fill', '#22c55e')
+    .on('mouseover', function(event, d) {
+      tooltip.style('opacity', 1)
+        .html(`<strong>${d.year}</strong><br/>HDI: ${d.hdi.toFixed(3)}`);
+    })
+    .on('mousemove', function(event) {
+      tooltip.style('left', (event.pageX + 12) + 'px')
+        .style('top', (event.pageY - 28) + 'px');
+    })
+    .on('mouseout', () => tooltip.style('opacity', 0));
+
+  // Axes
+  svg.append('g').attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(x).tickFormat(d3.format('d')))
+    .selectAll('text').attr('fill', '#94a3b8');
+  svg.append('g')
+    .call(d3.axisLeft(y).ticks(5))
+    .selectAll('text').attr('fill', '#94a3b8');
+}
