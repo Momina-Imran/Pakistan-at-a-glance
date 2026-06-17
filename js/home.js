@@ -30,40 +30,37 @@ Promise.all([
   const popRows = popData
     .filter(d => d.indicator_code === 'SP.POP.TOTL' && !isNaN(+d.value))
     .sort((a, b) => +b.year - +a.year);
-  if (popRows.length) {
+  if (popRows.length)
     animateCounter('kpi-population', Math.round(+popRows[0].value / 1e6), '', 'M');
-  }
 
   // ── KPI: GDP ──
   const gdpRows = econData
     .filter(d => d.indicator_code === 'NY.GDP.MKTP.CD' && !isNaN(+d.value))
     .sort((a, b) => +b.year - +a.year);
-  if (gdpRows.length) {
+  if (gdpRows.length)
     animateCounter('kpi-gdp', Math.round(+gdpRows[0].value / 1e9), '$', 'B');
-  }
 
-  // ── KPI: Literacy (avg of male + female latest year) ──
+  // ── KPI: Literacy ──
   const litF = eduData
     .filter(d => d.indicator_code === 'SE.ADT.LITR.FE.ZS' && !isNaN(+d.value))
     .sort((a, b) => +b.year - +a.year);
   const litM = eduData
     .filter(d => d.indicator_code === 'SE.ADT.LITR.MA.ZS' && !isNaN(+d.value))
     .sort((a, b) => +b.year - +a.year);
-  if (litF.length && litM.length) {
-    const avg = Math.round((+litF[0].value + +litM[0].value) / 2);
-    animateCounter('kpi-literacy', avg, '', '%');
-  }
+  if (litF.length && litM.length)
+    animateCounter('kpi-literacy', Math.round((+litF[0].value + +litM[0].value) / 2), '', '%');
 
   // ── KPI: Life Expectancy ──
   const lifeRows = healthData
     .filter(d => d.indicator_code === 'SP.DYN.LE00.IN' && !isNaN(+d.value))
     .sort((a, b) => +b.year - +a.year);
-  if (lifeRows.length) {
+  if (lifeRows.length)
     animateCounter('kpi-life', Math.round(+lifeRows[0].value), '', ' yrs');
-  }
 
-  // ── MAP ──
-  const width = 620, height = 520;
+  // ── HDI Map ──
+  const mapContainer = document.getElementById('pakistan-map');
+  const width = mapContainer.offsetWidth || 600;
+  const height = 500;
 
   const svg = d3.select('#pakistan-map')
     .append('svg')
@@ -74,14 +71,37 @@ Promise.all([
     .domain([0.38, 0.70])
     .interpolator(d3.interpolateGreens);
 
+  // HDI latest year
   const latestYear = d3.max(hdiData, d => +d.year);
   const hdiMap = {};
   hdiData
     .filter(d => +d.year === latestYear)
     .forEach(d => { hdiMap[d.Region.trim()] = +d.hdi; });
 
+  // HDI CSV names → GeoJSON shapeName mapping
+  const nameMap = {
+    'AJK':                            'Azad Kashmir',
+    'Balochistan':                    'Balochistan',
+    'KPK':                            'Khyber Pakhtunkhwa',
+    'Punjab':                         'Punjab',
+    'Sindh':                          'Sindh',
+    'Islamabad (ICT)':                'Islamabad',
+    'Gilgit Baltistan':               'Gilgit-Baltistan',
+    'FATA':                           'FATA'
+  };
+
+  // Reverse map: shapeName → hdi value
+  const shapeHDI = {};
+  Object.entries(nameMap).forEach(([csvName, shapeName]) => {
+    if (hdiMap[csvName] !== undefined) {
+      shapeHDI[shapeName] = hdiMap[csvName];
+    }
+  });
+
+  // Projection — fitExtent automatically sizes map
   const projection = d3.geoMercator()
-  .fitExtent([[20, 20], [width - 20, height - 20]], geoData);
+    .fitExtent([[10, 10], [width - 10, height - 10]], geoData);
+
   const path = d3.geoPath().projection(projection);
 
   svg.selectAll('path')
@@ -90,12 +110,14 @@ Promise.all([
     .append('path')
     .attr('d', path)
     .attr('fill', d => {
-      const name = d.properties.shapeName || d.properties.NAME_1 || d.properties.name;      return hdiMap[name] ? colorScale(hdiMap[name]) : '#334155';
+      const name = d.properties.shapeName;
+      return shapeHDI[name] ? colorScale(shapeHDI[name]) : '#334155';
     })
     .attr('stroke', '#0f172a')
     .attr('stroke-width', 1.5)
     .on('mouseover', function(event, d) {
-      const name = d.properties.shapeName || d.properties.NAME_1 || d.properties.name;      const hdi = hdiMap[name];
+      const name = d.properties.shapeName;
+      const hdi = shapeHDI[name];
       d3.select(this).attr('stroke', '#22c55e').attr('stroke-width', 2.5);
       tooltip.style('opacity', 1)
         .html(`<strong>${name}</strong><br/>HDI (${latestYear}): ${hdi ? hdi.toFixed(3) : 'N/A'}`);
@@ -123,7 +145,7 @@ Promise.all([
   const grad = defs.append('linearGradient').attr('id', 'legend-gradient');
   grad.selectAll('stop')
     .data([
-      { offset: '0%', color: colorScale(0.38) },
+      { offset: '0%',   color: colorScale(0.38) },
       { offset: '100%', color: colorScale(0.70) }
     ])
     .enter().append('stop')
@@ -141,13 +163,4 @@ Promise.all([
     .attr('fill', '#94a3b8').attr('text-anchor', 'end')
     .style('font-size', '11px').text('High HDI');
 
-}).catch(err => console.error('Data load error:', err));
-
-d3.json('data/pakistan.geojson').then(function(geoData) {
-  console.log('Features:', geoData.features.length);
-  console.log('First feature properties:', geoData.features[0].properties);
-  console.log('Bounds:', d3.geoBounds(geoData));
-});
-
-hdiData.filter(d => +d.year === latestYear)
-  .forEach(d => console.log('HDI Region:', d.Region));
+}).catch(err => console.error('Error:', err));
