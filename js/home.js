@@ -66,8 +66,14 @@ Promise.all([
   drawHDIBar(provinceData, latestYear);
 
   // ── Chart 2: National HDI Trend ──
-  const nationalData = hdiData
-    .filter(d => d.Region === 'Total' || d.Region === 'PAKt')
+  // Debug: dekho kya names hain
+console.log('All regions:', [...new Set(hdiData.map(d => d.Region))]);
+
+const nationalData = hdiData
+  .filter(d => d.Region === 'Total' || 
+               d.Region === 'PAKt' || 
+               d.Region === 'Pakistan' ||
+               d.Region === 'National')
     .map(d => ({ year: +d.year, hdi: +d.hdi }))
     .sort((a, b) => a.year - b.year);
 
