@@ -1,32 +1,30 @@
 import pandas as pd
 
-# Load HDI data
 df = pd.read_csv('HDI.csv')
 
-# Sirf Subnat rows rakho (province-level)
-provinces = df[df['Level'] == 'Subnat'].copy()
+# Subnat AND National dono rakho
+filtered = df[df['Level'].isin(['Subnat', 'National'])].copy()
 
-# Year columns extract karo
 year_cols = [col for col in df.columns if col.isdigit()]
 
-# Wide to long format
-melted = provinces.melt(
-    id_vars=['Region'],
+melted = filtered.melt(
+    id_vars=['Region', 'Level'],
     value_vars=year_cols,
     var_name='year',
     value_name='hdi'
 )
 
 melted['year'] = melted['year'].astype(int)
-
-# 2000 se 2023 tak rakho
 melted = melted[melted['year'].between(2000, 2023)]
 
-# Clean region names
+# National row ka Region "Total" rakho
+melted.loc[melted['Level'] == 'National', 'Region'] = 'Total'
+
 melted['Region'] = melted['Region'].str.replace(
     'Khyber Pakhtunkhwa (NWFrontier)', 'KPK', regex=False
 )
 
+melted = melted[['Region', 'year', 'hdi']]
 melted.to_csv('hdi_clean.csv', index=False)
-print("✅ hdi_clean.csv done")
-print(melted.head(10))
+print("Done!")
+print(melted['Region'].unique())
