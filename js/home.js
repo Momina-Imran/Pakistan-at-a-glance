@@ -80,7 +80,8 @@ Promise.all([
     .filter(d => +d.year === latestYear)
     .forEach(d => { hdiMap[d.Region.trim()] = +d.hdi; });
 
-  const projection = d3.geoMercator().fitSize([width, height], geoData);
+  const projection = d3.geoMercator()
+  .fitExtent([[20, 20], [width - 20, height - 20]], geoData);
   const path = d3.geoPath().projection(projection);
 
   svg.selectAll('path')
@@ -141,3 +142,12 @@ Promise.all([
     .style('font-size', '11px').text('High HDI');
 
 }).catch(err => console.error('Data load error:', err));
+
+d3.json('data/pakistan.geojson').then(function(geoData) {
+  console.log('Features:', geoData.features.length);
+  console.log('First feature properties:', geoData.features[0].properties);
+  console.log('Bounds:', d3.geoBounds(geoData));
+});
+
+hdiData.filter(d => +d.year === latestYear)
+  .forEach(d => console.log('HDI Region:', d.Region));
