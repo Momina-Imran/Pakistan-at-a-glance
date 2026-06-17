@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Health — Pakistan At A Glance</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="economy.html">Economy</a></li>
+      <li><a href="population.html">Population</a></li>
+      <li><a href="education.html">Education</a></li>
+      <li><a href="health.html" class="active">Health</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <h1>Health</h1>
+    <p>Life expectancy, infant mortality, hospital beds and undernourishment</p>
+  </section>
+
+  <section class="charts-grid">
+
+    <div class="chart-card full-width">
+      <h2>Life Expectancy at Birth (Years)</h2>
+      <div id="life-chart"></div>
+    </div>
+
+    <div class="chart-card">
+      <h2>Infant Mortality Rate (per 1,000 births)</h2>
+      <div id="imr-chart"></div>
+    </div>
+
+    <div class="chart-card">
+      <h2>Undernourishment (% of Population)</h2>
+      <div id="nutrition-chart"></div>
+    </div>
+
+    <div class="chart-card full-width">
+      <h2>Hospital Beds per 1,000 People</h2>
+      <div id="beds-chart"></div>
+    </div>
+
+  </section>
+
+  <div class="tooltip"></div>
+  <script src="js/shared.js"></script>
+  <script src="js/health.js"></script>
+</body>
+</html>

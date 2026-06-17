@@ -146,3 +146,71 @@ body {
   opacity: 0;
   transition: opacity 0.2s;
 }
+/* ── Charts Grid ── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.chart-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.chart-card h2 {
+  font-size: 1rem;
+  color: #f1f5f9;
+  margin-bottom: 1rem;
+}
+
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.chart-sub {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* ── Axes ── */
+.domain, .tick line {
+  stroke: #334155;
+}
+
+/* ── Slider ── */
+.year-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+#year-slider {
+  flex: 1;
+  accent-color: #22c55e;
+}
+
+#slider-year-label {
+  color: #22c55e;
+  font-weight: 600;
+  min-width: 40px;
+}
+
+#pakistan-map svg {
+  display: block;
+  margin: 0 auto;
+}
+/* ── Home Charts ── */
+.home-charts-section {
+  padding: 2rem;
+}
+
+.home-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
