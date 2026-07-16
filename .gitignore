@@ -1,0 +1,20 @@
+# ── API Keys & Secrets ──
+.env
+*.env
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+
+# ── Data files (large) ──
+data/countries.geojson
+
+# ── OS files ──
+.DS_Store
+Thumbs.db
+
+# ── VS Code ──
+.vscode/

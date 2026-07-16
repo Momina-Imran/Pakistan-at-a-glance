@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Policy Lens — Pakistan At A Glance</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">🇵🇰 Pakistan At A Glance</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="economy.html">Economy</a></li>
+      <li><a href="population.html">Population</a></li>
+      <li><a href="education.html">Education</a></li>
+      <li><a href="health.html">Health</a></li>
+      <li><a href="insights.html" class="active">🤖 AI Insights</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <h1>🤖 AI Policy Lens</h1>
+    <p>Explainable AI insights from Pakistan's real socioeconomic data</p>
+  </section>
+
+  <!-- Auto Summary Section -->
+  <section class="insights-section">
+    <div class="insights-header">
+      <h2>📊 Data Summary & Correlations</h2>
+      <p class="section-sub">AI-generated analysis based on World Bank + HDI data</p>
+      <button id="generate-summary-btn" class="ai-btn">
+        ✨ Generate AI Summary
+      </button>
+    </div>
+    <div id="summary-output" class="ai-output">
+      <p class="placeholder-text">Click "Generate AI Summary" to analyze all indicators...</p>
+    </div>
+  </section>
+
+  <!-- Correlation Explorer -->
+  <section class="insights-section">
+    <div class="insights-header">
+      <h2>🔗 Correlation Explorer</h2>
+      <p class="section-sub">Explore relationships between indicators</p>
+    </div>
+    <div class="correlation-controls">
+      <select id="correlation-select" class="ai-select">
+        <option value="inflation_education">Inflation ↔ Education</option>
+        <option value="gdp_health">GDP Growth ↔ Health</option>
+        <option value="trade_inflation">Trade Deficit ↔ Inflation</option>
+        <option value="population_hdi">Population Growth ↔ HDI</option>
+        <option value="literacy_hdi">Literacy Rate ↔ HDI by Province</option>
+      </select>
+      <button id="explore-btn" class="ai-btn">🔍 Explore Correlation</button>
+    </div>
+    <div id="correlation-output" class="ai-output">
+      <p class="placeholder-text">Select a correlation pair and click Explore...</p>
+    </div>
+  </section>
+
+  <!-- Policy Chat -->
+  <section class="insights-section">
+    <div class="insights-header">
+      <h2>💬 Ask the Data</h2>
+      <p class="section-sub">Ask any question — AI answers using Pakistan's real data</p>
+    </div>
+    <div class="chat-container">
+      <div id="chat-messages"></div>
+      <div class="chat-input-wrap">
+        <input
+          type="text"
+          id="chat-input"
+          class="chat-input"
+          placeholder="e.g. Why is Balochistan's HDI lowest? What should govt do about inflation?"
+        />
+        <button id="chat-send-btn" class="ai-btn">Send →</button>
+      </div>
+      <div class="suggested-questions">
+        <span class="sq-label">Try asking:</span>
+        <button class="sq-btn">Why did inflation spike in 2023?</button>
+        <button class="sq-btn">How does trade deficit affect education?</button>
+        <button class="sq-btn">Which province needs most government attention?</button>
+        <button class="sq-btn">What policies can improve Pakistan's HDI?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Transparency -->
+  <section class="insights-section">
+    <div class="insights-header">
+      <h2>🔎 Data Transparency</h2>
+      <p class="section-sub">Exactly what data was sent to AI — full transparency</p>
+    </div>
+    <div id="transparency-box" class="transparency-output">
+      <p class="placeholder-text">Data context will appear here after first AI query...</p>
+    </div>
+  </section>
+
+  <div class="tooltip"></div>
+  <script src="js/shared.js"></script>
+  <script src="js/insights.js"></script>
+</body>
+</html>
