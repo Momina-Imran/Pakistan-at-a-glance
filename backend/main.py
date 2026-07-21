@@ -12,7 +12,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI()
+# main.py ke top mein — load_dotenv() ke baad
 
+PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
+
+# Ye line add karo — check ke liye
+print(f"API Key loaded: {PERPLEXITY_API_KEY[:10] if PERPLEXITY_API_KEY else 'NOT FOUND'}")
 # ── CORS — sirf tumhara domain allow karo ──
 app.add_middleware(
     CORSMiddleware,
@@ -23,9 +28,6 @@ app.add_middleware(
     allow_methods=["POST"],
     allow_headers=["Content-Type"],
 )
-
-# ── API Key — environment variable se (never hardcode) ──
-PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
 # ── Rate Limiting — simple in-memory ──
 request_counts = defaultdict(list)
@@ -97,7 +99,7 @@ async def get_insights(request: Request, body: InsightRequest):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama-3.1-sonar-small-128k-online",
+                "model": "sonar",
                 "messages": messages,
                 "max_tokens": 600,
                 "temperature": 0.3
@@ -106,11 +108,11 @@ async def get_insights(request: Request, body: InsightRequest):
         )
 
     if response.status_code != 200:
+        print(f"Perplexity error: {response.status_code} — {response.text}")
         raise HTTPException(
-            status_code=502,
-            detail="AI service unavailable"
-        )
-
+        status_code=502,
+        detail=f"Perplexity error: {response.status_code} — {response.text}"
+        )   
     result = response.json()
     answer = result["choices"][0]["message"]["content"]
 
